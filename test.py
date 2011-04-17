@@ -83,7 +83,7 @@ pops = make_pops.make_random_pops(num_genes = 1000, num_pathways = 1500, num_org
 ##    print pathway
 print("Done constructing populations")
 
-matrix = sample_pops.construct_network_matrix(pops, 1000)
+matrix = sample_pops.construct_network_matrix(pops, 500)
 print("Done sampling populations")
 save_edge_values_to_file("data.txt", matrix)
 ##print (avg_existing_edge_value(matrix))
