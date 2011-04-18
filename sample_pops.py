@@ -2,7 +2,7 @@ import make_pops
 import random
 
 def sample(population, sample_size):
-##    print("Started sampling population %d" % population.id)
+    print("Started sampling population %d" % population.id)
 ##    print("Getting gene frequencies...")
     gene_freqs = population.get_gene_frequencies()
 ##    print("Done getting gene frequencies...")
@@ -17,7 +17,7 @@ def sample(population, sample_size):
             i += 1
         sample += [gene_freqs.keys()[i-1].id]
 ##        print("Added gene %d to the sample" % sample[-1])
-    print("Finished sampling population %d" % population.id)
+##    print("Finished sampling population %d" % population.id)
 ##    print ("Sorting sample...")
     return sorted(sample)
 
@@ -50,3 +50,4 @@ def construct_network_matrix(pops, sample_size):
 ##                    print("Strengthened and edge between nodes %d and %d" % (gene1, gene2))
 ##        print("Finished adding edges from pop %d" % pop.id)
     return matrix
+

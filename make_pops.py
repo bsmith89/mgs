@@ -82,6 +82,7 @@ def pareto_dist_orgs(organism, alpha = 1):
     return rand
         
 class Population():
+    extant_populations = {}
     
     def __init__(self, id, organisms, frequencies = normal_dist_orgs):
         self.id = id
@@ -97,6 +98,7 @@ class Population():
         self.genes = None
         self.gene_frequencies = None
 ##        print("Constructed population %d" % self.id)
+        Population.extant_populations[id] = self
 
 
     def get_orgs(self):
@@ -181,5 +183,54 @@ def make_random_pops(num_genes, num_pathways, num_orgs, genes_per_pathway,\
     populations = []
     for pop in range(num_pops):
         orgs = random.sample(Organism.extant_organisms.values(), orgs_per_pop)
+        populations += [Population(pop, orgs, pareto_dist_orgs)]
+    return populations
+
+def make_testable_pops(num_genes, num_pathways, num_orgs, genes_per_pathway,\
+                    pathways_per_org, orgs_per_pop, num_pops = 1):
+    """Makes a population where genes [0] and [1] are always in pathway [0] in organism [0]
+        And genes [2] and [3] are always in pathway 1, also in organism [0]
+
+    """
+    for gene_id in range(num_genes):
+        Gene(gene_id)
+##    print("Started constructing pathways")
+    for pathway_id in range(num_pathways):
+        genes = None
+        if pathway_id == 0:
+            genes = Gene.extant_genes.values()[:2] + \
+                    random.sample(Gene.extant_genes.values()[2:],
+                                  genes_per_pathway - 2)
+        elif pathway_id == 1:
+            gene_list = Gene.extant_genes.values()
+            definite_genes = gene_list[2:4]
+            other_genes = gene_list[0:2] + gene_list[4:]
+            genes = definite_genes + \
+                    random.sample(other_genes,
+                                  genes_per_pathway - 2)
+        else:
+            genes = random.sample(Gene.extant_genes.values(), genes_per_pathway)
+        Pathway(pathway_id, genes)
+##    print("Finished constructing pathways")
+##    print("Started constructing orgs")
+    for org_id in range(num_orgs):
+##        print("Started sampling pathways for org %d" % org_id)
+        pathways = None
+        if org_id == 0:
+            pathways = Pathway.extant_pathways.values()[:2] + \
+                       random.sample(Pathway.extant_pathways.values()[2:],
+                                     pathways_per_org - 2)
+        else:
+            pathways = random.sample(Pathway.extant_pathways.values(), pathways_per_org)
+##        print("Finished sampling pathways for org %d" % org_id)
+        Organism(org_id, pathways)
+##    print("Finished constructing orgs")
+    populations = []
+    for pop in range(num_pops):
+        if pop == 0:
+            org_list = Organism.extant_organisms.values()
+            orgs = [org_list[0]] + random.sample(org_list[1:], orgs_per_pop - 1)
+        else:
+            orgs = random.sample(Organism.extant_organisms.values(), orgs_per_pop)
         populations += [Population(pop, orgs, pareto_dist_orgs)]
     return populations
