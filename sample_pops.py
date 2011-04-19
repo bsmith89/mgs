@@ -1,6 +1,7 @@
 import make_pops
 import random
 
+
 def sample(population, sample_size):
     print("Started sampling population %d" % population.id)
 ##    print("Getting gene frequencies...")
@@ -8,24 +9,31 @@ def sample(population, sample_size):
 ##    print("Done getting gene frequencies...")
     sample = []
 ##    print("Started randomly selecting genes from the population...")
-    for pull in range(sample_size):
-        rand = random.random()
-        cumu = 0
-        i = 0
-        while cumu < rand:
-            cumu += gene_freqs.values()[i]
-            i += 1
-        sample += [gene_freqs.keys()[i-1].id]
+
+    
+##    # This is the really slow loop...
+##    for pull in range(sample_size):
+##        rand = random.random()
+##        cumu = 0
+##        i = 0
+##        while cumu < rand:
+##            cumu += gene_freqs.values()[i]
+##            i += 1
+##        sample += [gene_freqs.keys()[i-1].id]
+
+    sampled_list = []
+    for gene in gene_freqs.keys():
+        sampled_list += [gene.id]*int((sample_size**1.5)*gene_freqs[gene])
+    sample = random.sample(sampled_list, sample_size)
+        
 ##        print("Added gene %d to the sample" % sample[-1])
 ##    print("Finished sampling population %d" % population.id)
 ##    print ("Sorting sample...")
     return sorted(sample)
 
+# Potentially a slow step
 def genes_in_sample(sample):
-    genes = []
-    for gene in sample:
-        if gene not in genes:
-            genes += [gene]
+    genes = list(set(sample))
     return genes
 
 def zeros(cols, rows):

@@ -1,13 +1,24 @@
-function out = RandomMove(X,S)
+%% Metagenome Walk
+% Data collection regarding the results of a random walk on an imported
+% connection matrix.
+% Based on http://www.mathworks.com/matlabcentral/fileexchange/22003
 
-% Returns a node when given a node 1 degree from X on a graph connection matrix S
-
-V = S(:,X); % A slice of the graph producing only the connections to/from node X
-Index = find(V); % the indeces of the non-zero entries in V
-
-V_norm = V(Index) / sum(V); % the normalized connection values
-s = cumsum(V_norm); % the matrix of cumulative sums where s(0) = v_norm(0) and s(len(s)) = 1
-r = rand; % a random value between 0 and 1
-ind = find(s > r); % the values of s greater than r: basically truncates it at the first s>r
-out = Index(ind(1));
+data_files = dir('./data/*.dat');
+runs = length(data_files);
+example_path = strcat('./data/', data_files(1).name);
+example_data = importdata(example_path);
+num_genes = length(example_data);
+array3 = zeros(num_genes, num_genes, runs); % 3D array of all connectivity matrices
+for k = 1:runs;
+    path = strcat('./data/', data_files(k).name);
+    array3(:,:,k) = importdata(path);
 end
+
+max_x = max(nonzeros(array3));
+
+distributions = zeros(max_x+1, runs);
+for k = 1:runs;
+    all_edge_strengths = reshape(array3(:,:,k), [1, numel(array3(:,:,k))]);
+    distributions(:,k) = hist(all_edge_strengths, 0:1:max_x) / length(all_edge_strengths);
+end
+plot(distributions(2:max_x,:,:));
