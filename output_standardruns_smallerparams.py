@@ -6,18 +6,18 @@ reload(sample_pops)
 reload(make_pops)
 reload(construct_matrix)
 
-TOT_GENES = 1500
-TOT_PATHS = 250
-TOT_ORGS = 300
+TOT_GENES = 500
+TOT_PATHS = 150
+TOT_ORGS = 100
 GENES_PER_PATH = 15
-PATHS_PER_ORG = 50
-ORGS_PER_POP = 200
+PATHS_PER_ORG = 10
+ORGS_PER_POP = 50
 POPS = 10
-SAMPLE_SIZE = 1.5*TOT_GENES
-RUNS = 1
+SAMPLE_SIZE = int(1.5*TOT_GENES)
+RUNS = 10
 
-for run in range(10):
-    print sample_size
+for run in range(RUNS):
+    print run
     pops = make_pops.make_testable_pops(num_genes = TOT_GENES,
                                         num_pathways = TOT_PATHS,
                                         num_orgs = TOT_ORGS,
@@ -26,7 +26,8 @@ for run in range(10):
                                         orgs_per_pop = ORGS_PER_POP,
                                         num_pops = POPS)
     matrix = sample_pops.construct_network_matrix(pops, SAMPLE_SIZE)
-    construct_matrix.save_connection_matrix("data_standardruns//data%02d.dat" % run, matrix)
+    construct_matrix.save_connection_matrix("data_standardruns//data%s.dat" % \
+                                            str(run).rjust(2,'0'), matrix)
 
 
 

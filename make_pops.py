@@ -188,8 +188,15 @@ def make_random_pops(num_genes, num_pathways, num_orgs, genes_per_pathway,\
 
 def make_testable_pops(num_genes, num_pathways, num_orgs, genes_per_pathway,\
                     pathways_per_org, orgs_per_pop, num_pops = 1):
-    """Makes a population where genes [0] and [1] are always in pathway [0] in organism [0]
-        And genes [2] and [3] are always in pathway 1, also in organism [0]
+    """Makes a population
+
+    where genes [0] and [1] are always in pathway [0] in organism [0]
+    And gene [2] is always in pathway [1], in organism [0]
+
+    This allows us to test the nearness index (from a random walk) of
+    genes [0], [1], and [2], where the nearness of [0] and [1] represents
+    the pathway effect and [0] and [2] is the organism effect, and the
+    nearness to [3] is the control
 
     """
     for gene_id in range(num_genes):
@@ -197,26 +204,27 @@ def make_testable_pops(num_genes, num_pathways, num_orgs, genes_per_pathway,\
 ##    print("Started constructing pathways")
     for pathway_id in range(num_pathways):
         genes = None
-        if pathway_id == 0:
+        if pathway_id == 0: # so if you're pathway [0] you definitely have genes [0] and [1]
             genes = Gene.extant_genes.values()[:2] + \
                     random.sample(Gene.extant_genes.values()[2:],
                                   genes_per_pathway - 2)
-        elif pathway_id == 1:
+        elif pathway_id == 1: # so if you're pathway [1] you definitely have genes [2] and [3]
             gene_list = Gene.extant_genes.values()
-            definite_genes = gene_list[2:4]
-            other_genes = gene_list[0:2] + gene_list[4:]
+            definite_genes = [gene_list[2]]
+            other_genes = gene_list[0:2] + gene_list[3:]
             genes = definite_genes + \
                     random.sample(other_genes,
-                                  genes_per_pathway - 2)
+                                  genes_per_pathway - 1)
         else:
-            genes = random.sample(Gene.extant_genes.values(), genes_per_pathway)
+            genes = random.sample(Gene.extant_genes.values(),
+                                  genes_per_pathway)
         Pathway(pathway_id, genes)
 ##    print("Finished constructing pathways")
 ##    print("Started constructing orgs")
     for org_id in range(num_orgs):
 ##        print("Started sampling pathways for org %d" % org_id)
         pathways = None
-        if org_id == 0:
+        if org_id == 0: # so if you're organism [0] you definitely have pathways [0] and [1]
             pathways = Pathway.extant_pathways.values()[:2] + \
                        random.sample(Pathway.extant_pathways.values()[2:],
                                      pathways_per_org - 2)
